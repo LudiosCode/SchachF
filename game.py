@@ -28,7 +28,7 @@ def windowUpdate():
     pygame.display.update()
 
 
-def figurenErstellen():
+def figurenErstellen(farbe):
     for x in range(8):
         f = Figur.Pawn()
         f.color = 'w'
@@ -138,6 +138,12 @@ def figurenErstellen():
     r.column = 4
     pieces.append(r)
 
+    # r = Figur.King()
+    # r.color = 'w'
+    # r.row = 2
+    # r.column = 5
+    # pieces.append(r)
+
 
 def pieceLocations():
     locs = []
@@ -149,6 +155,11 @@ def pieceLocations():
 
 
 def klicked(x, y):
+    global lastPieceKlicked
+    global possibleWays
+
+    # spalte und reihe werden anhand der mausposition errechnet
+
     spalte = (x // 90)
     reihe = (y // 90)
 
@@ -157,23 +168,43 @@ def klicked(x, y):
     pw = 0
 
     if (spalte, reihe) in possibleWays:
+        #eliminieren der geschlagenen Figur
+        for p in pieces:
+            if spalte == p.column and reihe == p.row:
+                p.move((-1, -1))
         lastPieceKlicked.move((spalte, reihe))
+        possibleWays = []
         windowUpdate()
     else:
+
+        hit = False
+
         for p in pieces:
             if p.row == reihe and p.column == spalte:
-                if p != lastPieceKlicked:
 
-                    # print(type(p))
+                # print(type(p))
 
-                    windowUpdate()
+                windowUpdate()
 
-                    # print(p.ways())
-                    # pw = p.ways()
+                # print(p.ways())
+                # pw = p.ways()
 
-                    for w in p.ways(pieces):
-                        print(w)
-                        pygame.draw.circle(win, (255, 0, 0), (45 + w[0] * 90, 45 + w[1] * 90), 15)
+                #pygame.display.update()
+
+                possibleWays = p.ways(pieces)
+
+                for w in possibleWays:
+                    print(w)
+
+                    pygame.draw.circle(win, (255, 0, 0), (45 + w[0] * 90, 45 + w[1] * 90), 15)
+
+                lastPieceKlicked = p
+
+                hit = True
+
+        if not hit:
+            print("keine Figur")
+            windowUpdate()
 
     pygame.display.update()
 

@@ -7,7 +7,6 @@ w_Bishop = pygame.image.load('Bilder/wBishop.png')
 w_Rook = pygame.image.load('Bilder/wRook.png')
 w_Pawn = pygame.image.load('Bilder/wPawn.png')
 
-
 b_King = pygame.image.load('Bilder/bKing.png')
 b_Queen = pygame.image.load('Bilder/bQueen.png')
 b_Knight = pygame.image.load('Bilder/bKnight.png')
@@ -21,28 +20,29 @@ schwarz = [b_King, b_Queen, b_Bishop, b_Knight, b_Rook, b_Pawn]
 tWeiss = []
 tSchwarz = []
 
-
 squares = []
 
-#alliedPieces
+# alliedPieces
 aPieceLocs = []
 
-#opposedPieces
+# opposedPieces
 oPieceLocs = []
 
+
 class Piece:
-
     image = -1
-
 
     def __init__(self):
         self.row = 0
         self.column = 0
         self.color = 0
 
+    def move(self, square):
 
-    def move(self):
-        pass
+
+
+        self.column = square[0]
+        self.row = square[1]
 
     def draw(self, win):
         if self.color == 'w':
@@ -50,10 +50,9 @@ class Piece:
         else:
             zuZeichnen = schwarz[self.image]
 
-        #pygame.draw.rect(win, (0, 0, 255), (90, 90, 90, 90), 0)
+        # pygame.draw.rect(win, (0, 0, 255), (90, 90, 90, 90), 0)
 
-        win.blit(zuZeichnen, ((self.column)*90, (self.row)*90))
-
+        win.blit(zuZeichnen, ((self.column) * 90, (self.row) * 90))
 
 
 class King(Piece):
@@ -62,6 +61,10 @@ class King(Piece):
     def ways(self, pieces):
 
         squares = []
+
+        aPieceLocs = []
+
+        oPieceLocs = []
 
         for p in pieces:
             if p.color == self.color:
@@ -72,17 +75,70 @@ class King(Piece):
 
                 s = (self.column + x, self.row + y)
 
-                if s not in aPieceLocs:
-                    squares.append(s)
-                elif s in oPieceLocs:
-                    if self.movelegal(s):
-                        squares.append(s)
+                if not (0 <= s[0] <= 7) or not (0 <= s[1] <= 7):
+                    continue
+                else:
 
+                    if s not in aPieceLocs:
+                        squares.append(s)
+                    elif s in oPieceLocs:
+                        if self.movelegal(s):
+                            squares.append(s)
 
         return squares
 
+
 class Queen(Piece):
     image = 1
+
+    def ways(self, pieces):
+
+        squares = []
+
+        aPieceLocs = []
+
+        oPieceLocs = []
+
+        for p in pieces:
+            if p.color == self.color:
+                aPieceLocs.append((p.column, p.row))
+
+        for d in range(8):
+            for x in range(1, 8):
+
+                if d == 0:
+                    s = (self.column - x, self.row - x)
+                elif d == 1:
+                    s = (self.column + x, self.row - x)
+                elif d == 2:
+                    s = (self.column - x, self.row + x)
+                elif d == 3:
+                    s = (self.column + x, self.row + x)
+                elif d == 4:
+                    s = (self.column - x, self.row)
+                elif d == 5:
+                    s = (self.column + x, self.row)
+                elif d == 6:
+                    s = (self.column, self.row - x)
+                elif d == 7:
+                    s = (self.column, self.row + x)
+
+                if not (0 <= s[0] <= 7) or not (0 <= s[1] <= 7):
+                    break
+                else:
+                    if s in aPieceLocs:
+                        break
+
+                    # squares.append(s)
+
+                    if s not in aPieceLocs:
+                        squares.append(s)
+                    elif s in oPieceLocs:
+                        if self.movelegal(s):
+                            squares.append(s)
+
+        return squares
+
 
 class Bishop(Piece):
     image = 2
@@ -91,10 +147,15 @@ class Bishop(Piece):
 
         squares = []
 
+        aPieceLocs = []
+
+        oPieceLocs = []
+
         for p in pieces:
             if p.color == self.color:
                 aPieceLocs.append((p.column, p.row))
-
+            else:
+                oPieceLocs.append((p.column, p.row))
 
         for d in range(4):
             for x in range(1, 8):
@@ -108,26 +169,83 @@ class Bishop(Piece):
                 elif d == 3:
                     s = (self.column + x, self.row + x)
 
-                if not (0 <= s[0] <= 7) or not( 0 <= s[1] <= 7):
+                if not (0 <= s[0] <= 7) or not (0 <= s[1] <= 7):
                     break
                 else:
 
                     if s in aPieceLocs:
                         break
 
-                    #squares.append(s)
+                    # squares.append(s)
 
-                    if s not in aPieceLocs:
-                        squares.append(s)
                     elif s in oPieceLocs:
-                        if self.movelegal(s):
-                            squares.append(s)
-
+                        squares.append(s)
+                        # if self.movelegal(s):
+                        #     squares.append(s)
+                        break
+                    else:
+                        squares.append(s)
 
         return squares
 
+
 class Knight(Piece):
     image = 3
+
+    def ways(self, pieces):
+
+        squares = []
+
+        aPieceLocs = []
+
+        oPieceLocs = []
+
+        for p in pieces:
+            if p.color == self.color:
+                aPieceLocs.append((p.column, p.row))
+
+        for x in range(8):
+            # oben Links
+            if x == 0:
+                s = (self.column - 2, self.row - 1)
+            elif x == 1:
+                s = (self.column - 1, self.row - 2)
+
+            # oben Rechts
+            elif x == 2:
+                s = (self.column + 1, self.row - 2)
+            elif x == 3:
+                s = (self.column + 2, self.row - 1)
+
+            # unten Rechts
+            elif x == 4:
+                s = (self.column + 2, self.row + 1)
+            elif x == 5:
+                s = (self.column + 1, self.row + 2)
+
+            # unten Links
+            elif x == 6:
+                s = (self.column - 1, self.row + 2)
+            elif x == 7:
+                s = (self.column - 2, self.row + 1)
+
+            if not (0 <= s[0] <= 7) or not (0 <= s[1] <= 7):
+                continue
+            else:
+
+                if s in aPieceLocs:
+                    continue
+
+                # squares.append(s)
+
+                if s not in aPieceLocs:
+                    squares.append(s)
+                elif s in oPieceLocs:
+                    if self.movelegal(s):
+                        squares.append(s)
+
+        return squares
+
 
 class Rook(Piece):
     image = 4
@@ -136,10 +254,13 @@ class Rook(Piece):
 
         squares = []
 
+        aPieceLocs = []
+
+        oPieceLocs = []
+
         for p in pieces:
             if p.color == self.color:
                 aPieceLocs.append((p.column, p.row))
-
 
         for d in range(4):
             for x in range(1, 8):
@@ -160,7 +281,7 @@ class Rook(Piece):
                     if s in aPieceLocs:
                         break
 
-                    #squares.append(s)
+                    # squares.append(s)
 
                     if s not in aPieceLocs:
                         squares.append(s)
@@ -168,8 +289,117 @@ class Rook(Piece):
                         if self.movelegal(s):
                             squares.append(s)
 
-
         return squares
 
+
 class Pawn(Piece):
+    # checkt noch nicht nach legalität
+
     image = 5
+
+    canMoveTwo = True
+
+    movedTwo = False
+
+    def move(self, square):
+
+        self.canMoveTwo = False
+
+        if self.color == 'w':
+            if square[1] == self.row - 2:
+                self.movedTwo = True
+            elif self.movedTwo:
+                self.movedTwo = False
+        else:
+            if square[1] == self.row + 2:
+                self.movedTwo = True
+            elif self.movedTwo:
+                self.movedTwo = False
+
+        self.column = square[0]
+        self.row = square[1]
+
+    def ways(self, pieces):
+
+        squares = []
+
+        aPieceLocs = []
+
+        oPieceLocs = []
+
+        for p in pieces:
+            if p.color == self.color:
+                aPieceLocs.append((p.column, p.row))
+            else:
+                oPieceLocs.append((p.column, p.row))
+
+        if self.canMoveTwo:
+            if self.color == 'w':
+                s = (self.column, self.row - 2)
+
+                squares.append(s)
+
+                # if s not in aPieceLocs:
+                #     squares.append(s)
+                # elif s in oPieceLocs:
+                #     if self.movelegal(s):
+                #         squares.append(s)
+            else:
+                s = (self.column, self.row + 2)
+
+                squares.append(s)
+
+                # if s not in aPieceLocs:
+                #     squares.append(s)
+                # elif s in oPieceLocs:
+                #     if self.movelegal(s):
+                #         squares.append(s)
+
+        if self.color == 'w':
+            s = (self.column, self.row - 1)
+
+            squares.append(s)
+
+            if (self.column - 1, self.row - 1) in oPieceLocs:
+                squares.append((self.column - 1, self.row + 1))
+
+            if (self.column + 1, self.row - 1) in oPieceLocs:
+                squares.append((self.column - 1, self.row + 1))
+
+            if (self.column + 1, self.row) in oPieceLocs:
+                for p in pieces:
+                    if p.column == self.column + 1 and p.row == self.row:
+                        if p.movedTwo:
+                            squares.append((self.column + 1, self.row - 1))
+
+            if (self.column - 1, self.row) in oPieceLocs:
+                for p in pieces:
+                    if p.column == self.column - 1 and p.row == self.row:
+                        if p.movedTwo:
+                            squares.append((self.column - 1, self.row - 1))
+
+
+        else:
+            s = (self.column, self.row + 1)
+
+            squares.append(s)
+
+            if (self.column - 1, self.row + 1) in oPieceLocs:
+                squares.append((self.column - 1, self.row + 1))
+
+            if (self.column + 1, self.row + 1) in oPieceLocs:
+                squares.append((self.column - 1, self.row + 1))
+
+            if (self.column + 1, self.row) in oPieceLocs:
+                for p in pieces:
+                    if p.column == self.column + 1 and p.row == self.row:
+                        if p.movedTwo:
+                            squares.append((self.column + 1, self.row + 1))
+
+            if (self.column - 1, self.row) in oPieceLocs:
+                for p in pieces:
+                    if p.column == self.column - 1 and p.row == self.row:
+                        if p.movedTwo:
+                            squares.append((self.column - 1, self.row + 1))
+
+        return squares
