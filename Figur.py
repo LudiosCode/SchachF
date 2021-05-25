@@ -36,10 +36,11 @@ class Piece:
         self.row = 0
         self.column = 0
         self.color = 0
+        self.side = 0
 
     def move(self, square):
 
-
+        # En Passant nur im selben Zug fehlt noch !
 
         self.column = square[0]
         self.row = square[1]
@@ -303,6 +304,8 @@ class Pawn(Piece):
 
     def move(self, square):
 
+        # En Passant nur im selben Zug fehlt noch !
+
         self.canMoveTwo = False
 
         if self.color == 'w':
@@ -334,37 +337,29 @@ class Pawn(Piece):
                 oPieceLocs.append((p.column, p.row))
 
         if self.canMoveTwo:
-            if self.color == 'w':
-                s = (self.column, self.row - 2)
-
-                squares.append(s)
-
-                # if s not in aPieceLocs:
-                #     squares.append(s)
-                # elif s in oPieceLocs:
-                #     if self.movelegal(s):
-                #         squares.append(s)
-            else:
-                s = (self.column, self.row + 2)
-
-                squares.append(s)
-
-                # if s not in aPieceLocs:
-                #     squares.append(s)
-                # elif s in oPieceLocs:
-                #     if self.movelegal(s):
-                #         squares.append(s)
-
-        if self.color == 'w':
-            s = (self.column, self.row - 1)
+            s = (self.column, self.row - 2)
 
             squares.append(s)
 
+            # if s not in aPieceLocs:
+            #     squares.append(s)
+            # elif s in oPieceLocs:
+            #     if self.movelegal(s):
+            #         squares.append(s)
+
+
+        if self.side == 'down':
+            s = (self.column, self.row - 1)
+            if s not in oPieceLocs:
+                squares.append(s)
+
             if (self.column - 1, self.row - 1) in oPieceLocs:
-                squares.append((self.column - 1, self.row + 1))
+                squares.append((self.column - 1, self.row - 1))
 
             if (self.column + 1, self.row - 1) in oPieceLocs:
-                squares.append((self.column - 1, self.row + 1))
+                squares.append((self.column + 1, self.row - 1))
+
+
 
             if (self.column + 1, self.row) in oPieceLocs:
                 for p in pieces:
@@ -381,14 +376,31 @@ class Pawn(Piece):
 
         else:
             s = (self.column, self.row + 1)
+            if s not in oPieceLocs:
+                if legalmove(self, pieces, (self.column, self.row), s):
+                    squares.append(s)
 
-            squares.append(s)
+            if self.canMoveTwo:
+                s = (self.column, self.row + 2)
+
+                squares.append(s)
+
+                # if s not in aPieceLocs:
+                #     squares.append(s)
+                # elif s in oPieceLocs:
+                #     if self.movelegal(s):
+                #         squares.append(s)
+
+
 
             if (self.column - 1, self.row + 1) in oPieceLocs:
                 squares.append((self.column - 1, self.row + 1))
 
             if (self.column + 1, self.row + 1) in oPieceLocs:
-                squares.append((self.column - 1, self.row + 1))
+                squares.append((self.column + 1, self.row + 1))
+
+
+
 
             if (self.column + 1, self.row) in oPieceLocs:
                 for p in pieces:
@@ -403,3 +415,29 @@ class Pawn(Piece):
                             squares.append((self.column - 1, self.row + 1))
 
         return squares
+
+
+def legalmove(piece, pieces, start, ziel):
+
+    checkPieces = pieces
+    farbe = 0
+    kingSquare = 0
+    Tiefe = 0
+
+    for p in checkPieces:
+        if p.column == start[0] and p.row == start[1]:
+            farbe = p.color
+            p.move(ziel)
+
+        if p.color == piece.color:
+            if type(p) == King:
+                kingSquare = (p.column, p.row)
+
+    for p in checkPieces:
+        if p.color != farbe:
+            if kingSquare in p.ways(pieces):
+                return False
+
+    return True
+
+

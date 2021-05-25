@@ -28,114 +28,155 @@ def windowUpdate():
     pygame.display.update()
 
 
-def figurenErstellen(farbe):
+def figurenErstellen(SF, CF):
+    
     for x in range(8):
         f = Figur.Pawn()
-        f.color = 'w'
+        f.color = SF
         f.row = 6
         f.column = x
+        f.side = 'down'
         pieces.append(f)
 
         f = Figur.Pawn()
-        f.color = 'b'
+        f.color = CF
         f.row = 1
         f.column = x
+        f.side = 'top'
         pieces.append(f)
 
-    r = Figur.Rook()
-    r.color = 'b'
-    r.row = 0
-    r.column = 0
-    pieces.append(r)
 
-    r = Figur.Rook()
-    r.color = 'b'
-    r.row = 0
-    r.column = 7
-    pieces.append(r)
 
-    r = Figur.Rook()
-    r.color = 'w'
-    r.row = 7
-    r.column = 0
-    pieces.append(r)
+    SQ = 0
+    SK = 0
+    CQ = 0
+    CK = 0
 
-    r = Figur.Rook()
-    r.color = 'w'
-    r.row = 7
-    r.column = 7
-    pieces.append(r)
+    if SF == 'w':
 
-    r = Figur.Knight()
-    r.color = 'b'
-    r.row = 0
-    r.column = 1
-    pieces.append(r)
+        SQ = (7, 3)
+        SK = (7, 4)
 
-    r = Figur.Knight()
-    r.color = 'b'
-    r.row = 0
-    r.column = 6
-    pieces.append(r)
+        CQ = (0, 3)
+        CK = (0, 4)
+    else:
 
-    r = Figur.Knight()
-    r.color = 'w'
-    r.row = 7
-    r.column = 1
-    pieces.append(r)
+        SQ = (7, 4)
+        SK = (7, 3)
 
-    r = Figur.Knight()
-    r.color = 'w'
-    r.row = 7
-    r.column = 6
-    pieces.append(r)
-
-    r = Figur.Bishop()
-    r.color = 'b'
-    r.row = 0
-    r.column = 2
-    pieces.append(r)
-
-    r = Figur.Bishop()
-    r.color = 'b'
-    r.row = 0
-    r.column = 5
-    pieces.append(r)
-
-    r = Figur.Bishop()
-    r.color = 'w'
-    r.row = 7
-    r.column = 2
-    pieces.append(r)
-
-    r = Figur.Bishop()
-    r.color = 'w'
-    r.row = 7
-    r.column = 5
-    pieces.append(r)
+        CQ = (0, 4)
+        CK = (0, 3)
 
     r = Figur.Queen()
-    r.color = 'b'
-    r.row = 0
-    r.column = 3
-    pieces.append(r)
-
-    r = Figur.Queen()
-    r.color = 'w'
-    r.row = 7
-    r.column = 3
+    r.color = SF
+    r.row = SQ[0]
+    r.column = SQ[1]
+    r.side = 'down'
     pieces.append(r)
 
     r = Figur.King()
-    r.color = 'b'
-    r.row = 0
-    r.column = 4
+    r.color = SF
+    r.row = SK[0]
+    r.column = SK[1]
+    r.side = 'down'
+    pieces.append(r)
+
+    r = Figur.Queen()
+    r.color = CF
+    r.row = CQ[0]
+    r.column = CQ[1]
+    r.side = 'top'
     pieces.append(r)
 
     r = Figur.King()
-    r.color = 'w'
+    r.color = CF
+    r.row = CK[0]
+    r.column = CK[1]
+    r.side = 'top'
+    pieces.append(r)
+
+    r = Figur.Rook()
+    r.color = SF
     r.row = 7
-    r.column = 4
+    r.column = 0
+    r.side = 'down'
+    pieces.append(r)
+
+    r = Figur.Rook()
+    r.color = SF
+    r.row = 7
+    r.column = 7
+    r.side = 'down'
+    pieces.append(r)
+
+    r = Figur.Knight()
+    r.color = SF
+    r.row = 7
+    r.column = 1
+    r.side = 'down'
+    pieces.append(r)
+
+    r = Figur.Knight()
+    r.color = SF
+    r.row = 7
+    r.column = 6
+    r.side = 'down'
+    pieces.append(r)
+
+    r = Figur.Bishop()
+    r.color = SF
+    r.row = 7
+    r.column = 2
+    r.side = 'down'
+    pieces.append(r)
+
+    r = Figur.Bishop()
+    r.color = SF
+    r.row = 7
+    r.column = 5
+    r.side = 'down'
+    pieces.append(r)
+
+    r = Figur.Rook()
+    r.color = CF
+    r.row = 0
+    r.column = 0
+    r.side = 'top'
+    pieces.append(r)
+
+    r = Figur.Rook()
+    r.color = CF
+    r.row = 0
+    r.column = 7
+    r.side = 'top'
+    pieces.append(r)
+
+    r = Figur.Knight()
+    r.color = CF
+    r.row = 0
+    r.column = 1
+    r.side = 'top'
+    pieces.append(r)
+
+    r = Figur.Knight()
+    r.color = CF
+    r.row = 0
+    r.column = 6
+    r.side = 'top'
+    pieces.append(r)
+
+    r = Figur.Bishop()
+    r.color = CF
+    r.row = 0
+    r.column = 2
+    r.side = 'top'
+    pieces.append(r)
+
+    r = Figur.Bishop()
+    r.color = CF
+    r.row = 0
+    r.column = 5
+    r.side = 'top'
     pieces.append(r)
 
     # r = Figur.King()
@@ -168,6 +209,7 @@ def klicked(x, y):
     pw = 0
 
     if (spalte, reihe) in possibleWays:
+
         #eliminieren der geschlagenen Figur
         for p in pieces:
             if spalte == p.column and reihe == p.row:
@@ -212,7 +254,7 @@ def klicked(x, y):
 def main():
     pieceSelected = False
 
-    figurenErstellen()
+    figurenErstellen('w', 'b')
 
     windowUpdate()
 
