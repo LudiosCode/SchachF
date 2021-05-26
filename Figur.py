@@ -1,59 +1,12 @@
-import pygame
-
-w_King = pygame.image.load('Bilder/wKing.png')
-w_Queen = pygame.image.load('Bilder/wQueen.png')
-w_Knight = pygame.image.load('Bilder/wKnight.png')
-w_Bishop = pygame.image.load('Bilder/wBishop.png')
-w_Rook = pygame.image.load('Bilder/wRook.png')
-w_Pawn = pygame.image.load('Bilder/wPawn.png')
-
-b_King = pygame.image.load('Bilder/bKing.png')
-b_Queen = pygame.image.load('Bilder/bQueen.png')
-b_Knight = pygame.image.load('Bilder/bKnight.png')
-b_Bishop = pygame.image.load('Bilder/bBishop.png')
-b_Rook = pygame.image.load('Bilder/bRook.png')
-b_Pawn = pygame.image.load('Bilder/bPawn.png')
-
-weiss = [w_King, w_Queen, w_Bishop, w_Knight, w_Rook, w_Pawn]
-schwarz = [b_King, b_Queen, b_Bishop, b_Knight, b_Rook, b_Pawn]
-
-tWeiss = []
-tSchwarz = []
-
-squares = []
-
-# alliedPieces
-aPieceLocs = []
-
-# opposedPieces
-oPieceLocs = []
-
 
 class Piece:
     image = -1
 
     def __init__(self):
-        self.row = 0
-        self.column = 0
+
         self.color = 0
         self.side = 0
-
-    def move(self, square):
-
-        # En Passant nur im selben Zug fehlt noch !
-
-        self.column = square[0]
-        self.row = square[1]
-
-    def draw(self, win):
-        if self.color == 'w':
-            zuZeichnen = weiss[self.image]
-        else:
-            zuZeichnen = schwarz[self.image]
-
-        # pygame.draw.rect(win, (0, 0, 255), (90, 90, 90, 90), 0)
-
-        win.blit(zuZeichnen, ((self.column) * 90, (self.row) * 90))
+        self.index = 0
 
 
 class King(Piece):
@@ -63,28 +16,10 @@ class King(Piece):
 
         squares = []
 
-        aPieceLocs = []
-
-        oPieceLocs = []
-
-        for p in pieces:
-            if p.color == self.color:
-                aPieceLocs.append((p.column, p.row))
-
-        for x in range(-1, 1):
-            for y in range(-1, 1):
-
-                s = (self.column + x, self.row + y)
-
-                if not (0 <= s[0] <= 7) or not (0 <= s[1] <= 7):
-                    continue
-                else:
-
-                    if s not in aPieceLocs:
-                        squares.append(s)
-                    elif s in oPieceLocs:
-                        if self.movelegal(s):
-                            squares.append(s)
+        for i in (-9, -8, -7, -1, 1, 7, 8, 9):
+            if 0 <= self.index + i <= 63:
+                if moveIsLegal(self.index + i):
+                    squares.append(self.index + i)
 
         return squares
 
@@ -336,22 +271,24 @@ class Pawn(Piece):
             else:
                 oPieceLocs.append((p.column, p.row))
 
-        if self.canMoveTwo:
-            s = (self.column, self.row - 2)
 
-            squares.append(s)
-
-            # if s not in aPieceLocs:
-            #     squares.append(s)
-            # elif s in oPieceLocs:
-            #     if self.movelegal(s):
-            #         squares.append(s)
 
 
         if self.side == 'down':
             s = (self.column, self.row - 1)
             if s not in oPieceLocs:
                 squares.append(s)
+
+            if self.canMoveTwo:
+                s = (self.column, self.row - 2)
+
+                squares.append(s)
+
+                # if s not in aPieceLocs:
+                #     squares.append(s)
+                # elif s in oPieceLocs:
+                #     if self.movelegal(s):
+                #         squares.append(s)
 
             if (self.column - 1, self.row - 1) in oPieceLocs:
                 squares.append((self.column - 1, self.row - 1))
@@ -415,6 +352,10 @@ class Pawn(Piece):
                             squares.append((self.column - 1, self.row + 1))
 
         return squares
+
+
+def moveIsLegal(index):
+    return True
 
 
 def legalmove(piece, pieces, start, ziel):
